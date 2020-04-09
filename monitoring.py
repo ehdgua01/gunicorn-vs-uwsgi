@@ -3,15 +3,15 @@ from typing import Dict
 
 
 class Monitoring(object):
-    def __init__(self) -> None:
+    def __init__(self, pidfile: str) -> None:
         self.__stop = False
 
-    def measure_resource(self, pidfile: str) -> Dict[str, float]:
-        """CPU && RAM Usages"""
         with open(pidfile) as f:
-            master_pid = f.read().strip()
+            self.master_pid = f.read().strip()
 
-        master_process = psutil.Process(int(master_pid))
+    def measure_resource(self) -> Dict[str, float]:
+        """CPU && RAM Usages"""
+        master_process = psutil.Process(int(self.master_pid))
         children = master_process.children()
         cpu = 0
         mem = 0
