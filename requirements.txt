@@ -1,0 +1,5 @@
+gunicorn
+uwsgi
+flask
+psutil
+requests
