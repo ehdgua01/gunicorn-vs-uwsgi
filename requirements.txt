@@ -2,4 +2,4 @@ gunicorn
 uwsgi
 flask
 psutil
-requests
+aiohttp
