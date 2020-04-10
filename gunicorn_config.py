@@ -1,9 +1,13 @@
 pidfile = 'gunicorn.pid'
-bind = '127.0.0.1:80'
+bind = [':80']
 
 workers = 4
 worker_class = 'gevent'
+worker_connections = 4096
 threads = 4
+
+preload_app = True
+keepalive = 0
 
 accesslog = '-'
 errorlog = '-'
