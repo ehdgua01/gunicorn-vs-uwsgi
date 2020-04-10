@@ -11,25 +11,29 @@ class Monitoring(object):
             self.master_pid = f.read().strip()
 
     def measure_resource(self, interval: float) -> Dict[str, float]:
-        """CPU && RAM Usages"""
+        """Averages of CPU && RAM Usages"""
         master_process = psutil.Process(int(self.master_pid))
-        children = master_process.children()
+        children = []
+
         cpu = 0
         mem = 0
+        count = 0
 
         while not self.__stop:
+            count += 1
             cpu += master_process.cpu_percent()
-            mem += master_process.memory_percent()
+            mem += master_process.memory_info().rss
+            children = master_process.children()
 
-            for p in children:
-                cpu += p.cpu_percent()
-                mem += p.memory_percent()
+            for child in children:
+                cpu += child.cpu_percent()
+                mem += child.memory_info().rss
 
             time.sleep(interval)
 
         return {
-            'cpu': cpu,
-            'mem': mem,
+            'cpu': (cpu / count) / (1 + len(children)),
+            'mem': (mem / count) / (1 + len(children)) / (1024 * 1024),
         }
 
     def stop(self) -> None:
