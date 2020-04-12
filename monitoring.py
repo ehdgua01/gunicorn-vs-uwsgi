@@ -17,23 +17,27 @@ class Monitoring(object):
 
         cpu = 0
         mem = 0
-        count = 0
+        t1 = time.time()
 
         while not self.__stop:
-            count += 1
-            cpu += master_process.cpu_percent()
-            mem += master_process.memory_info().rss
-            children = master_process.children()
+            try:
+                cpu += master_process.cpu_percent()
+                mem += master_process.memory_info().rss
+                children = master_process.children()
 
-            for child in children:
-                cpu += child.cpu_percent()
-                mem += child.memory_info().rss
+                for child in children:
+                    cpu += child.cpu_percent()
+                    mem += child.memory_info().rss
+            except Exception:
+                pass
 
             time.sleep(interval)
 
+        t2 = time.time() - t1
+
         return {
-            'cpu': (cpu / count) / (1 + len(children)),
-            'mem': (mem / count) / (1 + len(children)) / (1024 * 1024),
+            'cpu': (cpu / t2) / (1 + len(children)),
+            'mem': (mem / t2) / (1 + len(children)) / (1024 * 1024),
         }
 
     def stop(self) -> None:
