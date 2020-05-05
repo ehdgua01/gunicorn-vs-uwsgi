@@ -1,4 +1,5 @@
 import time
+from timeit import default_timer as timer
 import psutil
 from typing import Dict
 
@@ -17,7 +18,7 @@ class Monitoring(object):
 
         cpu = 0
         mem = 0
-        t1 = time.time()
+        start = timer()
 
         while not self.__stop:
             try:
@@ -33,11 +34,10 @@ class Monitoring(object):
 
             time.sleep(interval)
 
-        t2 = time.time() - t1
-
+        end = timer() - start
         return {
-            'cpu': (cpu / t2) / (1 + len(children)),
-            'mem': (mem / t2) / (1 + len(children)) / (1024 * 1024),
+            'cpu': (cpu / end) / (1 + len(children)),
+            'mem': (mem / end) / (1 + len(children)) / (1024 * 1024),
         }
 
     def stop(self) -> None:
